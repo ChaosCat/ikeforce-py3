@@ -133,11 +133,11 @@ ikeCrypto = crypto.ikeCrypto()
 #curIV = curIV[8:]
 #curIV = "310b9f65dfb2542b".decode('hex')
 
-print "encKey ",encKey
-print "initIV ",initIV
-print "msgID ",msgID
+print("encKey ",encKey)
+print("initIV ",initIV)
+print("msgID ",msgID)
 #print "lastBlock ",lastBlock
-print "rawencPayload ",rawencPayload
+print("rawencPayload ",rawencPayload)
 #print "curIV ",curIV.encode('hex')
 #print rawPacket
 
@@ -167,11 +167,11 @@ lastBlock = ikeCrypto.calcIV(p2IV.decode('hex'),msgID.decode('hex'), IVlen, hash
 #bb323ef80e56e133c7669733e8c73d6917a11ad5af0d1cad361363074bb88311755caf6fb92843ce5a060df7be6c2b79584e399f47b2332216862c6b3896ed0cc58004d8f06b76d76bab1e30211508c27221783a09b2a3f9ca769b486e744ac04a62007ef562e1d0654b7cc5e63f2c093af4ae46c6c3649a0141594223225ec5ce559323a2f03fa8
 #10e3e8e1ee65c655
 #lastBlock = ikeCrypto.calcIV(initIV.decode('hex'),msgID.decode('hex'), IVlen, hashType)
-print "lastBlock: %s"%lastBlock.encode('hex')
+print("lastBlock: %s"%lastBlock.encode('hex'))
 
 cipher = ikeCrypto.ikeCipher(encKey.decode('hex'), lastBlock, encType)
 ikePlain = cipher.decrypt(rawencPayload.decode('hex')).encode('hex')
-print ikePlain
+print(ikePlain)
 ikeHandler.main(rawPacket,encType,hashType,encKey.decode('hex'),initIV,lastBlock)
 
 #print "Trying lastBlock: ",lastBlock
