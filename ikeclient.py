@@ -10,13 +10,11 @@ import OpenSSL
 import sys
 import struct
 
-try:
-    import udp
-except ImportError:
-    print(
-        "Missing 'udp' library: install it with 'pip install pyip' then run again.\nExiting..."
-    )
-    exit()
+# The old `udp` package (pyip) is deprecated in this project. We no longer
+# rely on it to build raw UDP packets. Modern Python 3 code can use a
+# datagram socket and bind to a source port to control the UDP source port.
+# If raw packet crafting is required, consider adding scapy and modifying
+# sendPacket accordingly. For now, keep a simple, portable implementation.
 
 import array
 import dh
@@ -791,19 +789,40 @@ class IKEv1Client(object):
         return packedBytes
 
     def sendPacket(self, bytes, target, sport, port):
-        # Build raw UPD packet to avoid duplicate port/socket issues
-        udpPacket = udp.Packet()
-        udpPacket.sport = sport
-        udpPacket.dport = port
-        udpPacket.data = bytes
-        packet = udp.assemble(udpPacket, 0)
-        sock = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_UDP)
-        sock.sendto(packet, (target, port))
+        # Use a normal UDP socket and bind to the desired source port. This
+        # avoids the deprecated `udp` dependency and works on Python 3.
+        try:
+            sport_int = int(sport)
+        except Exception:
+            sport_int = sport
+
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        # Bind to all interfaces on the desired source port to set the source
+        # port for outgoing packets. If bind fails (insufficient privileges or
+        # port in use), fall back to an ephemeral source port.
+        try:
+            sock.bind(("", sport_int))
+        except Exception:
+            try:
+                # If sport_int is not an int (e.g., already a tuple) or bind
+                # failed, ignore and continue; kernel will pick a source port.
+                pass
+            except Exception:
+                pass
+
+        sock.sendto(bytes, (target, int(port)))
         if self.debug > 0:
             print("UDP target IP: %s" % target)
             print("UDP target port: %s" % port)
             print("UDP source port: %s" % sport)
-            print("Sending: %s" % bytes.encode("hex"))
+            # bytes may be a bytes object in Python 3; use .hex()
+            try:
+                print("Sending: %s" % bytes.hex())
+            except Exception:
+                try:
+                    print("Sending: %s" % bytes.encode("hex"))
+                except Exception:
+                    print("Sending: <binary data>")
 
     def main(
         self,
