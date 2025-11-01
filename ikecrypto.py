@@ -10,7 +10,7 @@
 import hmac
 import binascii
 import hashlib
-from Crypto.Cipher import *
+from Cryptodome.Cipher import *
 
 debug = 0
 
@@ -446,7 +446,7 @@ class ikeCrypto(object):
                                 print("Ka (Encryption Key): %s"%ka)
                         keymat = ka.decode('hex')
         if debug > 0:
-                print('Phase 2 Key: %s'%keymat.encode('hex'))
+                print('Phase 2 Key: %s'%keymat.hex())
         return keymat
 
 def main():
@@ -522,10 +522,10 @@ def main():
 
         if msgID == "00000000":
                 cipher = testCrypt.ikeCipher(encKey, initIV, encType)
-                print(cipher.decrypt(ikePayload).encode('hex'))
+                print(cipher.decrypt(ikePayload).hex())
         else:
                 cipher = testCrypt.ikeCipher(encKey, curIV, encType)
-                print(cipher.decrypt(ikePayload).encode('hex'))
+                print(cipher.decrypt(ikePayload).hex())
 
 
         HASHmcfg = testCrypt.calcHASHmcfg(SKEYID_a, msgID.decode('hex'), mcfgAttr.decode('hex'), hashType)

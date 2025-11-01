@@ -249,7 +249,7 @@ class IKERequestHandler(socketserver.BaseRequestHandler):
         data,sock = self.request
         curThread = threading.currentThread()
         response = "%s: %s"%(curThread.getName(), data)
-        hexPacket =  data.encode('hex')
+        hexPacket =  data.hex()
 
         if hexPacket in packets:
                 indexPacket = int(packets.index(hexPacket)) + 1
@@ -304,7 +304,7 @@ if __name__ == '__main__':
                             #try:
                             #            iCookie
                             #except:
-                            iCookie = ikeneg.secRandom(8).encode('hex')
+                            iCookie = ikeneg.secRandom(8).hex()
                             try:
                                     rCookie
                             except:
@@ -376,7 +376,7 @@ if __name__ == '__main__':
                         try:
                                 iCookie
                         except:
-                                iCookie = ikeneg.secRandom(8).encode('hex')
+                                iCookie = ikeneg.secRandom(8).hex()
                         try:
                                 rCookie
                         except:
@@ -491,7 +491,7 @@ if __name__ == '__main__':
                                                 pass
 
                                             if len(packets) == 0: #do we actually need this prob not?
-                                                iCookie = ikeneg.secRandom(8).encode('hex')
+                                                iCookie = ikeneg.secRandom(8).hex()
                                                 rCookie = "0000000000000000"
                                                 if debug > 0:
                                                         print("\n--------------------Sending first Aggressive Mode packet with ID: %s--------------------"%IDdata)
@@ -609,7 +609,7 @@ if __name__ == '__main__':
                                             else:
                                                     pass
                                             if len(packets) == 0: #do we actually need this prob not?
-                                                iCookie = ikeneg.secRandom(8).encode('hex')
+                                                iCookie = ikeneg.secRandom(8).hex()
                                                 rCookie = "0000000000000000"
                                                 if debug > 0:
                                                         print("\n--------------------Sending first Aggressive Mode packet with ID: %s--------------------"%IDdata)
@@ -663,7 +663,7 @@ if __name__ == '__main__':
                                             else:
                                                     pass
                                             if len(packets) == 0: #do we actually need this prob not?
-                                                iCookie = ikeneg.secRandom(8).encode('hex')
+                                                iCookie = ikeneg.secRandom(8).hex()
                                                 rCookie = "0000000000000000"
                                                 if debug > 0:
                                                         print("\n--------------------Sending first Aggressive Mode packet with ID: %s--------------------"%IDdata)
@@ -741,11 +741,11 @@ if __name__ == '__main__':
                                                 if len(skeyid_e) < keyLen:
                                                         encKey = ikeCrypto.calcKa(skeyid_e, keyLen, hashType)
                                                         if debug > 0:
-                                                                print("Encryption Key: %s"%encKey.encode('hex'))
+                                                                print("Encryption Key: %s"%encKey.hex())
                                                 else:
                                                         encKey = skeyid_e[:keyLen]
                                                         if debug > 0:
-                                                                print("Encryption Key: %s"%encKey.encode('hex'))
+                                                                print("Encryption Key: %s"%encKey.hex())
                                                 initIV = ikeCrypto.calcIV(DHPubKey_i.decode('hex'),DHPubKey_r.decode('hex'), IVlen, hashType)
 
 
@@ -770,26 +770,26 @@ if __name__ == '__main__':
                                                 plainData = (bytesHash+bytesVID)
                                                 plainPayload = ikeCrypto.calcPadding(encType, plainData)
                                                 if debug > 0:
-                                                        print("Plain-text Payload: %s"%plainPayload.encode('hex'))
+                                                        print("Plain-text Payload: %s"%plainPayload.hex())
 
                                                 cipher = ikeCrypto.ikeCipher(encKey, initIV, encType)
                                                 encPayload = cipher.encrypt(plainPayload)
 
                                                 if debug > 0:
-                                                        print("Encrypted Payload: %s"%encPayload.encode('hex'))
+                                                        print("Encrypted Payload: %s"%encPayload.hex())
 
                                                 arrayencPayload = array.array('B', encPayload)
                                                 lenencPayload = len(arrayencPayload)
                                                 bytesencPayload = struct.pack(("B"*lenencPayload),*arrayencPayload)
-                                                arrayHDR = ikeneg.ikeHeader("08",iCookie,rCookie,version,flags,xType,msgID,bytesencPayload.encode('hex'))#next payload is always hash (08)
+                                                arrayHDR = ikeneg.ikeHeader("08",iCookie,rCookie,version,flags,xType,msgID,bytesencPayload.hex())#next payload is always hash (08)
                                                 lenHDR = len(arrayHDR)
                                                 bytesHDR = struct.pack(("B"*lenHDR),*arrayHDR)
                                                 bytesIKE = bytesHDR+bytesencPayload
                                                 if debug > 0:
                                                         print("\n--------------------Sending second (encrypted) Aggressive Mode packet--------------------")
                                                 ikeneg.sendPacket(bytesIKE,targetIP,sport,port)
-                                                dicCrypto["p2IV"] = bytesIKE.encode('hex')[-IVlen:]
-                                                dicCrypto["lastBlock"] = bytesIKE.encode('hex')[-IVlen:]#phase 2 IV and last block are the same at this point
+                                                dicCrypto["p2IV"] = bytesIKE.hex()[-IVlen:]
+                                                dicCrypto["lastBlock"] = bytesIKE.hex()[-IVlen:]#phase 2 IV and last block are the same at this point
                                                 time.sleep(speed)
                                             if len(packets) > 1:
                                                         #Parse the header first
@@ -876,7 +876,7 @@ if __name__ == '__main__':
                         try:
                                 iCookie
                         except:
-                                iCookie = ikeneg.secRandom(8).encode('hex')
+                                iCookie = ikeneg.secRandom(8).hex()
                         try:
                                 rCookie
                         except:
@@ -980,11 +980,11 @@ if __name__ == '__main__':
                         if len(skeyid_e) < keyLen:
                                 encKey = ikeCrypto.calcKa(skeyid_e, keyLen, hashType)
                                 if debug > 0:
-                                        print("Encryption Key: %s"%encKey.encode('hex'))
+                                        print("Encryption Key: %s"%encKey.hex())
                         else:
                                 encKey = skeyid_e[:keyLen]
                                 if debug > 0:
-                                        print("Encryption Key: %s"%encKey.encode('hex'))
+                                        print("Encryption Key: %s"%encKey.hex())
                         initIV = ikeCrypto.calcIV(DHPubKey_i.decode('hex'),DHPubKey_r.decode('hex'), IVlen, hashType)
 
                         dicCrypto["skeyid"] = skeyid
@@ -1005,24 +1005,24 @@ if __name__ == '__main__':
                         plainData = bytesHash+bytesVID
                         plainPayload = ikeCrypto.calcPadding(encType, plainData)
                         if debug > 0:
-                                print("Plain-text Payload: %s"%plainPayload.encode('hex'))
+                                print("Plain-text Payload: %s"%plainPayload.hex())
 
                         cipher = ikeCrypto.ikeCipher(encKey, initIV, encType)
                         encPayload = cipher.encrypt(plainPayload)
 
                         if debug > 0:
-                                print("Encrypted Payload: %s"%encPayload.encode('hex'))
+                                print("Encrypted Payload: %s"%encPayload.hex())
 
                         arrayencPayload = array.array('B', encPayload)
                         lenencPayload = len(arrayencPayload)
                         bytesencPayload = struct.pack(("B"*lenencPayload),*arrayencPayload)
-                        arrayHDR = ikeneg.ikeHeader("08",iCookie,rCookie,version,flags,xType,msgID,bytesencPayload.encode('hex'))#next payload is always hash (08)
+                        arrayHDR = ikeneg.ikeHeader("08",iCookie,rCookie,version,flags,xType,msgID,bytesencPayload.hex())#next payload is always hash (08)
                         lenHDR = len(arrayHDR)
                         bytesHDR = struct.pack(("B"*lenHDR),*arrayHDR)
                         bytesIKE = bytesHDR+bytesencPayload
                         ikeneg.sendPacket(bytesIKE,targetIP,sport,port)
-                        dicCrypto["p2IV"] = bytesIKE.encode('hex')[-IVlen:]
-                        dicCrypto["lastBlock"] = bytesIKE.encode('hex')[-IVlen:]#p2IV and last block are the same at this point
+                        dicCrypto["p2IV"] = bytesIKE.hex()[-IVlen:]
+                        dicCrypto["lastBlock"] = bytesIKE.hex()[-IVlen:]#p2IV and last block are the same at this point
                         while len(packets) < 2:
                                 time.sleep(0.5)
 
@@ -1159,25 +1159,25 @@ if __name__ == '__main__':
                                 plainData = (bytesHash+bytesMCFG)
                                 plainPayload = ikeCrypto.calcPadding(encType, plainData)
                                 if debug > 0:
-                                        print("Plain-text Payload: %s"%plainPayload.encode('hex'))
+                                        print("Plain-text Payload: %s"%plainPayload.hex())
 
                                 #Encryption/decryption uses last block from previous encrypted payload (CBC) except when a new message ID is created
                                 cipher = ikeCrypto.ikeCipher(encKey, dicCrypto["lastBlock"].decode('hex'), encType)
                                 encPayload = cipher.encrypt(plainPayload)
 
                                 if debug > 0:
-                                        print("Encrypted Payload: %s"%encPayload.encode('hex'))
+                                        print("Encrypted Payload: %s"%encPayload.hex())
 
                                 arrayencPayload = array.array('B', encPayload)
                                 lenencPayload = len(arrayencPayload)
                                 bytesencPayload = struct.pack(("B"*lenencPayload),*arrayencPayload)
-                                arrayHDR = ikeneg.ikeHeader("08",iCookie,rCookie,version,flags,xType,msgID,bytesencPayload.encode('hex'))#next payload is always hash (08)
+                                arrayHDR = ikeneg.ikeHeader("08",iCookie,rCookie,version,flags,xType,msgID,bytesencPayload.hex())#next payload is always hash (08)
                                 lenHDR = len(arrayHDR)
                                 bytesHDR = struct.pack(("B"*lenHDR),*arrayHDR)
                                 bytesIKE = bytesHDR+bytesencPayload
 
                                 ikeneg.sendPacket(bytesIKE,targetIP,sport,port)
-                                dicCrypto["lastBlock"] = bytesIKE.encode('hex')[-IVlen:]
+                                dicCrypto["lastBlock"] = bytesIKE.hex()[-IVlen:]
                                 while len(packets) < 3:
                                         time.sleep(0.5)
 
@@ -1286,7 +1286,7 @@ if __name__ == '__main__':
                                                                 plainData = (bytesHash+bytesDel)
                                                                 plainPayload = ikeCrypto.calcPadding(encType, plainData)
                                                                 if debug > 0:
-                                                                        print("Plain-text Payload: %s"%plainPayload.encode('hex'))
+                                                                        print("Plain-text Payload: %s"%plainPayload.hex())
 
                                                                         #Encryption/decryption uses last block from previous encrypted payload (CBC) except when a new message ID is created
                                                                 #Calc message ID and current IV
@@ -1296,13 +1296,13 @@ if __name__ == '__main__':
                                                                 encPayload = cipher.encrypt(plainPayload)
 
                                                                 if debug > 0:
-                                                                        print("Encrypted Payload: %s"%encPayload.encode('hex'))
+                                                                        print("Encrypted Payload: %s"%encPayload.hex())
 
                                                                 arrayencPayload = array.array('B', encPayload)
                                                                 lenencPayload = len(arrayencPayload)
                                                                 bytesencPayload = struct.pack(("B"*lenencPayload),*arrayencPayload)
 
-                                                                arrayHDR = ikeneg.ikeHeader("08",iCookie,rCookie,version,flags,xType,msgID,bytesencPayload.encode('hex'))#next payload is always hash (08)
+                                                                arrayHDR = ikeneg.ikeHeader("08",iCookie,rCookie,version,flags,xType,msgID,bytesencPayload.hex())#next payload is always hash (08)
                                                                 lenHDR = len(arrayHDR)
                                                                 bytesHDR = struct.pack(("B"*lenHDR),*arrayHDR)
 
@@ -1362,26 +1362,26 @@ if __name__ == '__main__':
                                                 plainData = (bytesHash+bytesMCFG)
                                                 plainPayload = ikeCrypto.calcPadding(encType, plainData)
                                                 if debug > 0:
-                                                        print("Plain-text Payload: %s"%plainPayload.encode('hex'))
+                                                        print("Plain-text Payload: %s"%plainPayload.hex())
 
                                                 #Encryption/decryption uses last block from previous encrypted payload (CBC) except when a new message ID is created
                                                 cipher = ikeCrypto.ikeCipher(encKey, dicCrypto["lastBlock"].decode('hex'), encType)
                                                 encPayload = cipher.encrypt(plainPayload)
 
                                                 if debug > 0:
-                                                        print("Encrypted Payload: %s"%encPayload.encode('hex'))
+                                                        print("Encrypted Payload: %s"%encPayload.hex())
 
                                                 arrayencPayload = array.array('B', encPayload)
                                                 lenencPayload = len(arrayencPayload)
                                                 bytesencPayload = struct.pack(("B"*lenencPayload),*arrayencPayload)
-                                                arrayHDR = ikeneg.ikeHeader("08",iCookie,rCookie,version,flags,xType,msgID,bytesencPayload.encode('hex'))#next payload is always hash (08)
+                                                arrayHDR = ikeneg.ikeHeader("08",iCookie,rCookie,version,flags,xType,msgID,bytesencPayload.hex())#next payload is always hash (08)
                                                 lenHDR = len(arrayHDR)
                                                 bytesHDR = struct.pack(("B"*lenHDR),*arrayHDR)
                                                 bytesIKE = bytesHDR+bytesencPayload
 
                                                 #Send ACK packet
                                                 ikeneg.sendPacket(bytesIKE,targetIP,sport,port)
-                                                dicCrypto["lastBlock"] = bytesIKE.encode('hex')[-IVlen:]
+                                                dicCrypto["lastBlock"] = bytesIKE.hex()[-IVlen:]
                                                 time.sleep(1)
 
                                                 #Delete payload
@@ -1393,7 +1393,7 @@ if __name__ == '__main__':
                                                 plainData = (bytesHash+bytesDel)
                                                 plainPayload = ikeCrypto.calcPadding(encType, plainData)
                                                 if debug > 0:
-                                                        print("Plain-text Payload: %s"%plainPayload.encode('hex'))
+                                                        print("Plain-text Payload: %s"%plainPayload.hex())
 
                                                 #Encryption/decryption uses last block from previous encrypted payload (CBC) except when a new message ID is created
                                                 #Calc message ID and current IV
@@ -1402,13 +1402,13 @@ if __name__ == '__main__':
                                                 cipher = ikeCrypto.ikeCipher(encKey, curIV, encType)
                                                 encPayload = cipher.encrypt(plainPayload)
                                                 if debug > 0:
-                                                        print("Encrypted Payload: %s"%encPayload.encode('hex'))
+                                                        print("Encrypted Payload: %s"%encPayload.hex())
 
                                                 arrayencPayload = array.array('B', encPayload)
                                                 lenencPayload = len(arrayencPayload)
                                                 bytesencPayload = struct.pack(("B"*lenencPayload),*arrayencPayload)
 
-                                                arrayHDR = ikeneg.ikeHeader("08",iCookie,rCookie,version,flags,xType,msgID,bytesencPayload.encode('hex'))#next payload is always hash (08)
+                                                arrayHDR = ikeneg.ikeHeader("08",iCookie,rCookie,version,flags,xType,msgID,bytesencPayload.hex())#next payload is always hash (08)
                                                 lenHDR = len(arrayHDR)
                                                 bytesHDR = struct.pack(("B"*lenHDR),*arrayHDR)
 
@@ -1467,7 +1467,7 @@ if __name__ == '__main__':
                                 plainData = (bytesHash+bytesDel)
                                 plainPayload = ikeCrypto.calcPadding(encType, plainData)
                                 if debug > 0:
-                                        print("Plain-text Payload: %s"%plainPayload.encode('hex'))
+                                        print("Plain-text Payload: %s"%plainPayload.hex())
 
                                 #Encryption/decryption uses last block from previous encrypted payload (CBC) except when a new message ID is created
                                 #Calc message ID and current IV
@@ -1476,13 +1476,13 @@ if __name__ == '__main__':
                                 cipher = ikeCrypto.ikeCipher(encKey, curIV, encType)
                                 encPayload = cipher.encrypt(plainPayload)
                                 if debug > 0:
-                                        print("Encrypted Payload: %s"%encPayload.encode('hex'))
+                                        print("Encrypted Payload: %s"%encPayload.hex())
 
                                 arrayencPayload = array.array('B', encPayload)
                                 lenencPayload = len(arrayencPayload)
                                 bytesencPayload = struct.pack(("B"*lenencPayload),*arrayencPayload)
 
-                                arrayHDR = ikeneg.ikeHeader("08",iCookie,rCookie,version,flags,xType,msgID,bytesencPayload.encode('hex'))#next payload is always hash (08)
+                                arrayHDR = ikeneg.ikeHeader("08",iCookie,rCookie,version,flags,xType,msgID,bytesencPayload.hex())#next payload is always hash (08)
                                 lenHDR = len(arrayHDR)
                                 bytesHDR = struct.pack(("B"*lenHDR),*arrayHDR)
 
@@ -1568,7 +1568,7 @@ if __name__ == '__main__':
                         try:
                                 iCookie
                         except:
-                                iCookie = ikeneg.secRandom(8).encode('hex')
+                                iCookie = ikeneg.secRandom(8).hex()
                         try:
                                 rCookie
                         except:
@@ -1625,7 +1625,7 @@ if __name__ == '__main__':
                                         plainData = (bytesHash+bytesDel)
                                         plainPayload = ikeCrypto.calcPadding(encType, plainData)
                                         if debug > 0:
-                                                print("Plain-text Payload: %s"%plainPayload.encode('hex'))
+                                                print("Plain-text Payload: %s"%plainPayload.hex())
 
                                         #Encryption/decryption uses last block from previous encrypted payload (CBC) except when a new message ID is created
                                         #Calc message ID and current IV
@@ -1634,13 +1634,13 @@ if __name__ == '__main__':
                                         cipher = ikeCrypto.ikeCipher(encKey, curIV, encType)
                                         encPayload = cipher.encrypt(plainPayload)
                                         if debug > 0:
-                                                print("Encrypted Payload: %s"%encPayload.encode('hex'))
+                                                print("Encrypted Payload: %s"%encPayload.hex())
 
                                         arrayencPayload = array.array('B', encPayload)
                                         lenencPayload = len(arrayencPayload)
                                         bytesencPayload = struct.pack(("B"*lenencPayload),*arrayencPayload)
 
-                                        arrayHDR = ikeneg.ikeHeader("08",iCookie,rCookie,version,flags,xType,msgID,bytesencPayload.encode('hex'))#next payload is always hash (08)
+                                        arrayHDR = ikeneg.ikeHeader("08",iCookie,rCookie,version,flags,xType,msgID,bytesencPayload.hex())#next payload is always hash (08)
                                         lenHDR = len(arrayHDR)
                                         bytesHDR = struct.pack(("B"*lenHDR),*arrayHDR)
 
@@ -1725,11 +1725,11 @@ if __name__ == '__main__':
                         if len(skeyid_e) < keyLen:
                                 encKey = ikeCrypto.calcKa(skeyid_e, keyLen, hashType)
                                 if debug > 0:
-                                        print("Encryption Key: %s"%encKey.encode('hex'))
+                                        print("Encryption Key: %s"%encKey.hex())
                         else:
                                 encKey = skeyid_e[:keyLen]
                                 if debug > 0:
-                                        print("Encryption Key: %s"%encKey.encode('hex'))
+                                        print("Encryption Key: %s"%encKey.hex())
                         initIV = ikeCrypto.calcIV(DHPubKey_i.decode('hex'),DHPubKey_r.decode('hex'), IVlen, hashType)
 
                         dicCrypto["skeyid"] = skeyid
@@ -1750,24 +1750,24 @@ if __name__ == '__main__':
                         plainData = bytesHash+bytesVID
                         plainPayload = ikeCrypto.calcPadding(encType, plainData)
                         if debug > 0:
-                                print("Plain-text Payload: %s"%plainPayload.encode('hex'))
+                                print("Plain-text Payload: %s"%plainPayload.hex())
 
                         cipher = ikeCrypto.ikeCipher(encKey, initIV, encType)
                         encPayload = cipher.encrypt(plainPayload)
 
                         if debug > 0:
-                                print("Encrypted Payload: %s"%encPayload.encode('hex'))
+                                print("Encrypted Payload: %s"%encPayload.hex())
 
                         arrayencPayload = array.array('B', encPayload)
                         lenencPayload = len(arrayencPayload)
                         bytesencPayload = struct.pack(("B"*lenencPayload),*arrayencPayload)
-                        arrayHDR = ikeneg.ikeHeader("08",iCookie,rCookie,version,flags,xType,msgID,bytesencPayload.encode('hex'))#next payload is always hash (08)
+                        arrayHDR = ikeneg.ikeHeader("08",iCookie,rCookie,version,flags,xType,msgID,bytesencPayload.hex())#next payload is always hash (08)
                         lenHDR = len(arrayHDR)
                         bytesHDR = struct.pack(("B"*lenHDR),*arrayHDR)
                         bytesIKE = bytesHDR+bytesencPayload
                         ikeneg.sendPacket(bytesIKE,targetIP,sport,port)
-                        dicCrypto["p2IV"] = bytesIKE.encode('hex')[-IVlen:]
-                        dicCrypto["lastBlock"] = bytesIKE.encode('hex')[-IVlen:]#p2IV and last block are the same at this point
+                        dicCrypto["p2IV"] = bytesIKE.hex()[-IVlen:]
+                        dicCrypto["lastBlock"] = bytesIKE.hex()[-IVlen:]#p2IV and last block are the same at this point
                         while len(packets) < 2:
                                 time.sleep(0.5)
 
@@ -1833,7 +1833,7 @@ if __name__ == '__main__':
                                         plainData = (bytesHash+bytesDel)
                                         plainPayload = ikeCrypto.calcPadding(encType, plainData)
                                         if debug > 0:
-                                                print("Plain-text Payload: %s"%plainPayload.encode('hex'))
+                                                print("Plain-text Payload: %s"%plainPayload.hex())
 
                                         #Encryption/decryption uses last block from previous encrypted payload (CBC) except when a new message ID is created
                                         #Calc message ID and current IV
@@ -1842,13 +1842,13 @@ if __name__ == '__main__':
                                         cipher = ikeCrypto.ikeCipher(encKey, curIV, encType)
                                         encPayload = cipher.encrypt(plainPayload)
                                         if debug > 0:
-                                                print("Encrypted Payload: %s"%encPayload.encode('hex'))
+                                                print("Encrypted Payload: %s"%encPayload.hex())
 
                                         arrayencPayload = array.array('B', encPayload)
                                         lenencPayload = len(arrayencPayload)
                                         bytesencPayload = struct.pack(("B"*lenencPayload),*arrayencPayload)
 
-                                        arrayHDR = ikeneg.ikeHeader("08",iCookie,rCookie,version,flags,xType,msgID,bytesencPayload.encode('hex'))#next payload is always hash (08)
+                                        arrayHDR = ikeneg.ikeHeader("08",iCookie,rCookie,version,flags,xType,msgID,bytesencPayload.hex())#next payload is always hash (08)
                                         lenHDR = len(arrayHDR)
                                         bytesHDR = struct.pack(("B"*lenHDR),*arrayHDR)
 
@@ -1961,25 +1961,25 @@ if __name__ == '__main__':
                                 plainData = (bytesHash+bytesMCFG)
                                 plainPayload = ikeCrypto.calcPadding(encType, plainData)
                                 if debug > 0:
-                                        print("Plain-text Payload: %s"%plainPayload.encode('hex'))
+                                        print("Plain-text Payload: %s"%plainPayload.hex())
 
                                 #Encryption/decryption uses last block from previous encrypted payload (CBC) except when a new message ID is created
                                 cipher = ikeCrypto.ikeCipher(encKey, dicCrypto["lastBlock"].decode('hex'), encType)
                                 encPayload = cipher.encrypt(plainPayload)
 
                                 if debug > 0:
-                                        print("Encrypted Payload: %s"%encPayload.encode('hex'))
+                                        print("Encrypted Payload: %s"%encPayload.hex())
 
                                 arrayencPayload = array.array('B', encPayload)
                                 lenencPayload = len(arrayencPayload)
                                 bytesencPayload = struct.pack(("B"*lenencPayload),*arrayencPayload)
-                                arrayHDR = ikeneg.ikeHeader("08",iCookie,rCookie,version,flags,xType,msgID,bytesencPayload.encode('hex'))#next payload is always hash (08)
+                                arrayHDR = ikeneg.ikeHeader("08",iCookie,rCookie,version,flags,xType,msgID,bytesencPayload.hex())#next payload is always hash (08)
                                 lenHDR = len(arrayHDR)
                                 bytesHDR = struct.pack(("B"*lenHDR),*arrayHDR)
                                 bytesIKE = bytesHDR+bytesencPayload
 
                                 ikeneg.sendPacket(bytesIKE,targetIP,sport,port)
-                                dicCrypto["lastBlock"] = bytesIKE.encode('hex')[-IVlen:]
+                                dicCrypto["lastBlock"] = bytesIKE.hex()[-IVlen:]
                                 while len(packets) < 3:
                                         time.sleep(0.5)
 
@@ -2034,7 +2034,7 @@ if __name__ == '__main__':
                                                         plainData = (bytesHash+bytesDel)
                                                         plainPayload = ikeCrypto.calcPadding(encType, plainData)
                                                         if debug > 0:
-                                                                print("Plain-text Payload: %s"%plainPayload.encode('hex'))
+                                                                print("Plain-text Payload: %s"%plainPayload.hex())
 
                                                         #Encryption/decryption uses last block from previous encrypted payload (CBC) except when a new message ID is created
                                                         #Calc message ID and current IV
@@ -2044,13 +2044,13 @@ if __name__ == '__main__':
                                                         encPayload = cipher.encrypt(plainPayload)
 
                                                         if debug > 0:
-                                                                print("Encrypted Payload: %s"%encPayload.encode('hex'))
+                                                                print("Encrypted Payload: %s"%encPayload.hex())
 
                                                         arrayencPayload = array.array('B', encPayload)
                                                         lenencPayload = len(arrayencPayload)
                                                         bytesencPayload = struct.pack(("B"*lenencPayload),*arrayencPayload)
 
-                                                        arrayHDR = ikeneg.ikeHeader("08",iCookie,rCookie,version,flags,xType,msgID,bytesencPayload.encode('hex'))#next payload is always hash (08)
+                                                        arrayHDR = ikeneg.ikeHeader("08",iCookie,rCookie,version,flags,xType,msgID,bytesencPayload.hex())#next payload is always hash (08)
                                                         lenHDR = len(arrayHDR)
                                                         bytesHDR = struct.pack(("B"*lenHDR),*arrayHDR)
 
@@ -2161,7 +2161,7 @@ if __name__ == '__main__':
                                                                         plainData = (bytesHash+bytesDel)
                                                                         plainPayload = ikeCrypto.calcPadding(encType, plainData)
                                                                         if debug > 0:
-                                                                                print("Plain-text Payload: %s"%plainPayload.encode('hex'))
+                                                                                print("Plain-text Payload: %s"%plainPayload.hex())
 
                                                                                 #Encryption/decryption uses last block from previous encrypted payload (CBC) except when a new message ID is created
                                                                         #Calc message ID and current IV
@@ -2171,13 +2171,13 @@ if __name__ == '__main__':
                                                                         encPayload = cipher.encrypt(plainPayload)
 
                                                                         if debug > 0:
-                                                                                print("Encrypted Payload: %s"%encPayload.encode('hex'))
+                                                                                print("Encrypted Payload: %s"%encPayload.hex())
 
                                                                         arrayencPayload = array.array('B', encPayload)
                                                                         lenencPayload = len(arrayencPayload)
                                                                         bytesencPayload = struct.pack(("B"*lenencPayload),*arrayencPayload)
 
-                                                                        arrayHDR = ikeneg.ikeHeader("08",iCookie,rCookie,version,flags,xType,msgID,bytesencPayload.encode('hex'))#next payload is always hash (08)
+                                                                        arrayHDR = ikeneg.ikeHeader("08",iCookie,rCookie,version,flags,xType,msgID,bytesencPayload.hex())#next payload is always hash (08)
                                                                         lenHDR = len(arrayHDR)
                                                                         bytesHDR = struct.pack(("B"*lenHDR),*arrayHDR)
 
@@ -2239,25 +2239,25 @@ if __name__ == '__main__':
                                                         plainData = (bytesHash+bytesMCFG)
                                                         plainPayload = ikeCrypto.calcPadding(encType, plainData)
                                                         if debug > 0:
-                                                                print("Plain-text Payload: %s"%plainPayload.encode('hex'))
+                                                                print("Plain-text Payload: %s"%plainPayload.hex())
 
                                                         #Encryption/decryption uses last block from previous encrypted payload (CBC) except when a new message ID is created
                                                         cipher = ikeCrypto.ikeCipher(encKey, dicCrypto["lastBlock"].decode('hex'), encType)
                                                         encPayload = cipher.encrypt(plainPayload)
 
                                                         if debug > 0:
-                                                                print("Encrypted Payload: %s"%encPayload.encode('hex'))
+                                                                print("Encrypted Payload: %s"%encPayload.hex())
 
                                                         arrayencPayload = array.array('B', encPayload)
                                                         lenencPayload = len(arrayencPayload)
                                                         bytesencPayload = struct.pack(("B"*lenencPayload),*arrayencPayload)
-                                                        arrayHDR = ikeneg.ikeHeader("08",iCookie,rCookie,version,flags,xType,msgID,bytesencPayload.encode('hex'))#next payload is always hash (08)
+                                                        arrayHDR = ikeneg.ikeHeader("08",iCookie,rCookie,version,flags,xType,msgID,bytesencPayload.hex())#next payload is always hash (08)
                                                         lenHDR = len(arrayHDR)
                                                         bytesHDR = struct.pack(("B"*lenHDR),*arrayHDR)
                                                         bytesIKE = bytesHDR+bytesencPayload
 
                                                         ikeneg.sendPacket(bytesIKE,targetIP,sport,port)
-                                                        dicCrypto["lastBlock"] = bytesIKE.encode('hex')[-IVlen:]
+                                                        dicCrypto["lastBlock"] = bytesIKE.hex()[-IVlen:]
 
                                                         #Delete payload
                                                         arrayDel = ikeneg.ikeDelete("00",iCookie,rCookie)
@@ -2268,7 +2268,7 @@ if __name__ == '__main__':
                                                         plainData = (bytesHash+bytesDel)
                                                         plainPayload = ikeCrypto.calcPadding(encType, plainData)
                                                         if debug > 0:
-                                                                print("Plain-text Payload: %s"%plainPayload.encode('hex'))
+                                                                print("Plain-text Payload: %s"%plainPayload.hex())
 
                                                         #Encryption/decryption uses last block from previous encrypted payload (CBC) except when a new message ID is created
                                                         #Calc message ID and current IV
@@ -2277,13 +2277,13 @@ if __name__ == '__main__':
                                                         cipher = ikeCrypto.ikeCipher(encKey, curIV, encType)
                                                         encPayload = cipher.encrypt(plainPayload)
                                                         if debug > 0:
-                                                                print("Encrypted Payload: %s"%encPayload.encode('hex'))
+                                                                print("Encrypted Payload: %s"%encPayload.hex())
 
                                                         arrayencPayload = array.array('B', encPayload)
                                                         lenencPayload = len(arrayencPayload)
                                                         bytesencPayload = struct.pack(("B"*lenencPayload),*arrayencPayload)
 
-                                                        arrayHDR = ikeneg.ikeHeader("08",iCookie,rCookie,version,flags,xType,msgID,bytesencPayload.encode('hex'))#next payload is always hash (08)
+                                                        arrayHDR = ikeneg.ikeHeader("08",iCookie,rCookie,version,flags,xType,msgID,bytesencPayload.hex())#next payload is always hash (08)
                                                         lenHDR = len(arrayHDR)
                                                         bytesHDR = struct.pack(("B"*lenHDR),*arrayHDR)
 
@@ -2394,7 +2394,7 @@ if __name__ == '__main__':
                         try:
                                 iCookie
                         except:
-                                iCookie = ikeneg.secRandom(8).encode('hex')
+                                iCookie = ikeneg.secRandom(8).hex()
                         try:
                                 rCookie
                         except:
@@ -2496,11 +2496,11 @@ if __name__ == '__main__':
                         if len(skeyid_e) < keyLen:
                                 encKey = ikeCrypto.calcKa(skeyid_e, keyLen, hashType)
                                 if debug > 0:
-                                        print("Encryption Key: %s"%encKey.encode('hex'))
+                                        print("Encryption Key: %s"%encKey.hex())
                         else:
                                 encKey = skeyid_e[:keyLen]
                                 if debug > 0:
-                                        print("Encryption Key: %s"%encKey.encode('hex'))
+                                        print("Encryption Key: %s"%encKey.hex())
                         initIV = ikeCrypto.calcIV(DHPubKey_i.decode('hex'),DHPubKey_r.decode('hex'), IVlen, hashType)
 
                         dicCrypto["skeyid"] = skeyid
@@ -2524,23 +2524,23 @@ if __name__ == '__main__':
                         plainData = bytesHash+bytesVID
                         plainPayload = ikeCrypto.calcPadding(encType, plainData)
                         if debug > 0:
-                                print("Plain-text Payload: %s"%plainPayload.encode('hex'))
+                                print("Plain-text Payload: %s"%plainPayload.hex())
 
                         cipher = ikeCrypto.ikeCipher(encKey, initIV, encType)
                         encPayload = cipher.encrypt(plainPayload)
 
                         if debug > 0:
-                                print("Encrypted Payload: %s"%encPayload.encode('hex'))
+                                print("Encrypted Payload: %s"%encPayload.hex())
 
                         arrayencPayload = array.array('B', encPayload)
                         bytesencPayload = ikeneg.packPacket(arrayencPayload)
-                        arrayIKE = ikeneg.ikeHeader("08",iCookie,rCookie,version,flags,xType,msgID,bytesencPayload.encode('hex'))#next payload is always hash (08)
+                        arrayIKE = ikeneg.ikeHeader("08",iCookie,rCookie,version,flags,xType,msgID,bytesencPayload.hex())#next payload is always hash (08)
                         bytesIKE = ikeneg.packPacket(arrayIKE)
 
                         #Send packet
                         ikeneg.sendPacket(bytesIKE,targetIP,sport,port)
-                        dicCrypto["p2IV"] = bytesIKE.encode('hex')[-IVlen:]
-                        dicCrypto["lastBlock"] = bytesIKE.encode('hex')[-IVlen:]#p2IV and last block are the same at this point
+                        dicCrypto["p2IV"] = bytesIKE.hex()[-IVlen:]
+                        dicCrypto["lastBlock"] = bytesIKE.hex()[-IVlen:]#p2IV and last block are the same at this point
                         count = 0
                         status = "p1_am3"
                         while len(packets) < 2:
@@ -2566,14 +2566,14 @@ if __name__ == '__main__':
                                         arrayTrans = ikeneg.ikeTransform(encType,"01",authType,DHGroup,"01","00007080",transID,phase,"00")
                                         bytesTrans = ikeneg.packPacket(arrayTrans)
                                         #Proposal Payload
-                                        arrayProposal = ikeneg.ikeProposal(bytesTrans.encode('hex'), "02", phase)
+                                        arrayProposal = ikeneg.ikeProposal(bytesTrans.hex(), "02", phase)
                                         bytesProposal = ikeneg.packPacket(arrayProposal)
                                         #SA Payload
-                                        arraySA = ikeneg.ikeSA(bytesProposal.encode('hex'))
+                                        arraySA = ikeneg.ikeSA(bytesProposal.hex())
                                         bytesSA = ikeneg.packPacket(arraySA)
                                         #arraySA_i = arraySA[4:]
-                                        #SA_i = self.packPacket(arraySA_i).encode('hex')
-                                        SA_i = bytesSA.encode('hex')
+                                        #SA_i = self.packPacket(arraySA_i).hex()
+                                        SA_i = bytesSA.hex()
 
                                         arrayNonce,nonce = ikeneg.ikeNonce("0d")
                                         bytesNonce = ikeneg.packPacket(arrayNonce)
@@ -2583,7 +2583,7 @@ if __name__ == '__main__':
                                         #mcfgIP = "c0a801eb".decode('hex')
 
                                         #ID payload
-                                        arrayID,ID_i = ikeneg.ikeID(mcfgIP.encode('hex'),"01","0000","00","05")#next payload = ID (5), 0000 = port
+                                        arrayID,ID_i = ikeneg.ikeID(mcfgIP.hex(),"01","0000","00","05")#next payload = ID (5), 0000 = port
                                         bytesID = ikeneg.packPacket(arrayID)
 
                                         #ID payload
@@ -2606,7 +2606,7 @@ if __name__ == '__main__':
 
                                         #plainPayload = ikeCrypto.calcPadding(encType, bytesHash+qmData)
                                         #qmData = plainPayload
-                                        print(skeyid_a.encode('hex'))
+                                        print(skeyid_a.hex())
                                         hash_1 = ikeCrypto.calcHASHQM(skeyid_a, msgID.decode('hex'), qmData, hashType, 1)
                                         arrayHash = ikeneg.ikeHash("01",hash_1)#next payload 01
                                         bytesHash = ikeneg.packPacket(arrayHash)
@@ -2615,24 +2615,24 @@ if __name__ == '__main__':
                                         curIV = ikeCrypto.calcIV(p2IV.decode('hex'), msgID.decode('hex'), IVlen, hashType)
                                         plainPayload = ikeCrypto.calcPadding(encType,bytesHash+bytesqmData)
                                         if debug > 0:
-                                                print("Plain-text Payload: %s"%plainPayload.encode('hex'))
+                                                print("Plain-text Payload: %s"%plainPayload.hex())
                                         #Encryption/decryption uses last block from previous encrypted payload (CBC) except when a new message ID is created
                                         cipher = ikeCrypto.ikeCipher(encKey, curIV, encType)
                                         encPayload = cipher.encrypt(plainPayload)
 
                                         if debug > 0:
-                                                print("Encrypted Payload: %s"%encPayload.encode('hex'))
+                                                print("Encrypted Payload: %s"%encPayload.hex())
 
 
                                         payloads = arrayencPayload = array.array('B', encPayload)
                                         payloads = ikeneg.packPacket(arrayencPayload)
-                                        arrayIKE = ikeneg.ikeHeader("08",iCookie,rCookie,version,flags,xType,msgID,payloads.encode('hex'))
+                                        arrayIKE = ikeneg.ikeHeader("08",iCookie,rCookie,version,flags,xType,msgID,payloads.hex())
                                         bytesIKE = ikeneg.packPacket(arrayIKE)
 
 
                                         #Send QM packet 1
                                         ikeneg.sendPacket(bytesIKE,targetIP,sport,port)
-                                        dicCrypto["lastBlock"] = bytesIKE.encode('hex')[-IVlen:]
+                                        dicCrypto["lastBlock"] = bytesIKE.hex()[-IVlen:]
                                         count = 0
                                         status = "p2_qm1"
                                         while len(packets) < 5:
@@ -2710,23 +2710,23 @@ if __name__ == '__main__':
                                         curIV = dicCrypto["lastBlock"].decode('hex')
                                         plainPayload = ikeCrypto.calcPadding(encType,bytesHash)
                                         if debug > 0:
-                                                print("Plain-text Payload: %s"%plainPayload.encode('hex'))
+                                                print("Plain-text Payload: %s"%plainPayload.hex())
                                         #Encryption/decryption uses last block from previous encrypted payload (CBC) except $
                                         cipher = ikeCrypto.ikeCipher(encKey, curIV, encType)
                                         encPayload = cipher.encrypt(plainPayload)
 
                                         if debug > 0:
-                                                print("Encrypted Payload: %s"%encPayload.encode('hex'))
+                                                print("Encrypted Payload: %s"%encPayload.hex())
 
                                         arrayencPayload = array.array('B', encPayload)
                                         bytesencPayload = ikeneg.packPacket(arrayencPayload)
 
-                                        arrayIKE = ikeneg.ikeHeader("08",iCookie,rCookie,version,flags,xType,msgID,bytesencPayload.encode('hex'))#next payload 0 = none
+                                        arrayIKE = ikeneg.ikeHeader("08",iCookie,rCookie,version,flags,xType,msgID,bytesencPayload.hex())#next payload 0 = none
                                         bytesIKE = ikeneg.packPacket(arrayIKE)
 
                                         #Send QM packet 3
                                         ikeneg.sendPacket(bytesIKE,targetIP,sport,port)
-                                        dicCrypto["lastBlock"] = bytesIKE.encode('hex')[-IVlen:]
+                                        dicCrypto["lastBlock"] = bytesIKE.hex()[-IVlen:]
                                         prot = "03"
                                         print("Phase 2 Complete!")
                                         spi = dicCrypto["spi"]
@@ -2802,7 +2802,7 @@ if __name__ == '__main__':
                                                         #lenHash = len(arrayHash)
                                                         #bytesHash = struct.pack(("B"*lenHash),*arrayHash)
 
-                                                        arrayIKE = ikeneg.ikeHeader("0b",iCookie,rCookie,version,flags,xType,msgID,bytesencPayload.encode('hex'))
+                                                        arrayIKE = ikeneg.ikeHeader("0b",iCookie,rCookie,version,flags,xType,msgID,bytesencPayload.hex())
                                                         bytesIKE = ikeneg.packPacket(arrayIKE)
 
                                                         #Send DPD packet
@@ -2930,22 +2930,22 @@ if __name__ == '__main__':
                         plainData = (bytesHash+bytesMCFG)
                         plainPayload = ikeCrypto.calcPadding(encType, plainData)
                         if debug > 0:
-                                print("Plain-text Payload: %s"%plainPayload.encode('hex'))
+                                print("Plain-text Payload: %s"%plainPayload.hex())
 
                         #Encryption/decryption uses last block from previous encrypted payload (CBC) except when a new message ID is created
                         cipher = ikeCrypto.ikeCipher(encKey, dicCrypto["lastBlock"].decode('hex'), encType)
                         encPayload = cipher.encrypt(plainPayload)
 
                         if debug > 0:
-                                print("Encrypted Payload: %s"%encPayload.encode('hex'))
+                                print("Encrypted Payload: %s"%encPayload.hex())
 
                         arrayencPayload = array.array('B', encPayload)
                         bytesencPayload = ikeneg.packPacket(arrayencPayload)
-                        arrayIKE = ikeneg.ikeHeader("08",iCookie,rCookie,version,flags,xType,msgID,bytesencPayload.encode('hex'))#next payload is always hash (08)
+                        arrayIKE = ikeneg.ikeHeader("08",iCookie,rCookie,version,flags,xType,msgID,bytesencPayload.hex())#next payload is always hash (08)
                         bytesIKE = ikeneg.packPacket(arrayIKE)
 
                         ikeneg.sendPacket(bytesIKE,targetIP,sport,port)
-                        dicCrypto["lastBlock"] = bytesIKE.encode('hex')[-IVlen:]
+                        dicCrypto["lastBlock"] = bytesIKE.hex()[-IVlen:]
 
                         time.sleep(speed)
                         while len(packets) < 2:
@@ -3037,7 +3037,7 @@ if __name__ == '__main__':
                                 plainData = (bytesHash+bytesMCFG)
                                 plainPayload = ikeCrypto.calcPadding(encType, plainData)
                                 if debug > 0:
-                                        print("Plain-text Payload: %s"%plainPayload.encode('hex'))
+                                        print("Plain-text Payload: %s"%plainPayload.hex())
 
                                 #Encryption/decryption uses last block from previous encrypted payload (CBC) except when a new message ID is created
                                 dicCrypto["lastBlock"] = packets[-1][-IVlen:]
@@ -3047,16 +3047,16 @@ if __name__ == '__main__':
                                 encPayload = cipher.encrypt(plainPayload)
 
                                 if debug > 0:
-                                        print("Encrypted Payload: %s"%encPayload.encode('hex'))
+                                        print("Encrypted Payload: %s"%encPayload.hex())
 
                                 arrayencPayload = array.array('B', encPayload)
                                 bytesencPayload = ikeneg.packPacket(arrayencPayload)
-                                arrayIKE = ikeneg.ikeHeader("08",iCookie,rCookie,version,flags,xType,msgID,bytesencPayload.encode('hex'))#next payload is always hash (08)
+                                arrayIKE = ikeneg.ikeHeader("08",iCookie,rCookie,version,flags,xType,msgID,bytesencPayload.hex())#next payload is always hash (08)
                                 bytesIKE = ikeneg.packPacket(arrayIKE)
 
                                 #Send ACK packet
                                 ikeneg.sendPacket(bytesIKE,targetIP,sport,port)
-                                dicCrypto["lastBlock"] = bytesIKE.encode('hex')[-IVlen:]
+                                dicCrypto["lastBlock"] = bytesIKE.hex()[-IVlen:]
                                 #time.sleep(1)
 
                                 #Request IP address etc
@@ -3089,7 +3089,7 @@ if __name__ == '__main__':
                                 plainData = (bytesHash+bytesMCFG)
                                 plainPayload = ikeCrypto.calcPadding(encType, plainData)
                                 if debug > 0:
-                                        print("Plain-text Payload: %s"%plainPayload.encode('hex'))
+                                        print("Plain-text Payload: %s"%plainPayload.hex())
 
 
 
@@ -3099,15 +3099,15 @@ if __name__ == '__main__':
                                 encPayload = cipher.encrypt(plainPayload)
 
                                 if debug > 0:
-                                        print("Encrypted Payload: %s"%encPayload.encode('hex'))
+                                        print("Encrypted Payload: %s"%encPayload.hex())
 
                                 arrayencPayload = array.array('B', encPayload)
                                 bytesencPayload = ikeneg.packPacket(arrayencPayload)
-                                arrayIKE = ikeneg.ikeHeader("08",iCookie,rCookie,version,flags,xType,msgID,bytesencPayload.encode('hex'))#next payload is always hash (08)
+                                arrayIKE = ikeneg.ikeHeader("08",iCookie,rCookie,version,flags,xType,msgID,bytesencPayload.hex())#next payload is always hash (08)
                                 bytesIKE = ikeneg.packPacket(arrayIKE)
                                 #Send REQ packet
                                 ikeneg.sendPacket(bytesIKE,targetIP,sport,port)
-                                dicCrypto["lastBlock"] = bytesIKE.encode('hex')[-IVlen:]
+                                dicCrypto["lastBlock"] = bytesIKE.hex()[-IVlen:]
                                 while len(packets) < 1:
                                     time.sleep(1)
                                     if countTime > 20:
@@ -3136,7 +3136,7 @@ if __name__ == '__main__':
                                 plainData = (bytesHash+bytesDel)
                                 plainPayload = ikeCrypto.calcPadding(encType, plainData)
                                 if debug > 0:
-                                        print "Plain-text Payload: %s"%plainPayload.encode('hex')
+                                        print "Plain-text Payload: %s"%plainPayload.hex()
 
                                 #Encryption/decryption uses last block from previous encrypted payload (CBC) except when a new message ID is created
                                 #Calc message ID and current IV
@@ -3147,11 +3147,11 @@ if __name__ == '__main__':
                                 encPayload = cipher.encrypt(plainPayload)
 
                                 if debug > 0:
-                                        print "Encrypted Payload: %s"%encPayload.encode('hex')
+                                        print "Encrypted Payload: %s"%encPayload.hex()
 
                                 arrayencPayload = array.array('B', encPayload)
                                 bytesencPayload = ikeneg.packPacket(arrayencPayload)
-                                arrayIKE = ikeneg.ikeHeader("08",iCookie,rCookie,version,flags,xType,msgID,bytesencPayload.encode('hex'))#next payload is always hash (08)
+                                arrayIKE = ikeneg.ikeHeader("08",iCookie,rCookie,version,flags,xType,msgID,bytesencPayload.hex())#next payload is always hash (08)
                                 bytesIKE = ikeneg.packPacket(arrayIKE)
 
                                 #Send Delete payload
@@ -3178,23 +3178,23 @@ if __name__ == '__main__':
                                 plainData = (bytesHash+bytesMCFG)
                                 plainPayload = ikeCrypto.calcPadding(encType, plainData)
                                 if debug > 0:
-                                        print("Plain-text Payload: %s"%plainPayload.encode('hex'))
+                                        print("Plain-text Payload: %s"%plainPayload.hex())
 
                                 #Encryption/decryption uses last block from previous encrypted payload (CBC) except when a new message ID is created
                                 cipher = ikeCrypto.ikeCipher(encKey, dicCrypto["lastBlock"].decode('hex'), encType)
                                 encPayload = cipher.encrypt(plainPayload)
 
                                 if debug > 0:
-                                        print("Encrypted Payload: %s"%encPayload.encode('hex'))
+                                        print("Encrypted Payload: %s"%encPayload.hex())
 
                                 arrayencPayload = array.array('B', encPayload)
                                 bytesencPayload = ikeneg.packPacket(arrayencPayload)
-                                arrayIKE = ikeneg.ikeHeader("08",iCookie,rCookie,version,flags,xType,msgID,bytesencPayload.encode('hex'))#next payload is always hash (08)
+                                arrayIKE = ikeneg.ikeHeader("08",iCookie,rCookie,version,flags,xType,msgID,bytesencPayload.hex())#next payload is always hash (08)
                                 bytesIKE = ikeneg.packPacket(arrayIKE)
 
                                 #Send ACK packet
                                 ikeneg.sendPacket(bytesIKE,targetIP,sport,port)
-                                dicCrypto["lastBlock"] = bytesIKE.encode('hex')[-IVlen:]
+                                dicCrypto["lastBlock"] = bytesIKE.hex()[-IVlen:]
 
 
                                 xType = "05" #Informational
@@ -3213,7 +3213,7 @@ if __name__ == '__main__':
                                 plainData = (bytesHash+bytesDel)
                                 plainPayload = ikeCrypto.calcPadding(encType, plainData)
                                 if debug > 0:
-                                        print("Plain-text Payload: %s"%plainPayload.encode('hex'))
+                                        print("Plain-text Payload: %s"%plainPayload.hex())
 
                                 #Encryption/decryption uses last block from previous encrypted payload (CBC) except when a new message ID is created
                                 #Calc message ID and current IV
@@ -3223,11 +3223,11 @@ if __name__ == '__main__':
                                 cipher = ikeCrypto.ikeCipher(encKey, curIV, encType)
                                 encPayload = cipher.encrypt(plainPayload)
                                 if debug > 0:
-                                        print("Encrypted Payload: %s"%encPayload.encode('hex'))
+                                        print("Encrypted Payload: %s"%encPayload.hex())
 
                                 arrayencPayload = array.array('B', encPayload)
                                 bytesencPayload = ikeneg.packPacket(arrayencPayload)
-                                arrayIKE = ikeneg.ikeHeader("08",iCookie,rCookie,version,flags,xType,msgID,bytesencPayload.encode('hex'))#next payload is always hash (08)
+                                arrayIKE = ikeneg.ikeHeader("08",iCookie,rCookie,version,flags,xType,msgID,bytesencPayload.hex())#next payload is always hash (08)
                                 bytesIKE = ikeneg.packPacket(arrayIKE)
 
                                 #Send Delete payload
@@ -3246,7 +3246,7 @@ if __name__ == '__main__':
                                 if debug > 0:
                                         print("Still receiving packets, but exiting...")
                                 dicCrypto["lastBlock"] = packets[-1][-IVlen:]
-                                curIV = bytesIKE.encode('hex')[-IVlen:]
+                                curIV = bytesIKE.hex()[-IVlen:]
                                 #del packets[-2]
                                 time.sleep(5)
                                 exit()
@@ -3327,17 +3327,17 @@ if __name__ == '__main__':
                         arrayTrans = ikeneg.ikeTransform(encType,"01",authType,DHGroup,"01","00007080",transID,phase,"00")
                         bytesTrans = ikeneg.packPacket(arrayTrans)
                         #Proposal Payload
-                        arrayProposal = ikeneg.ikeProposal(bytesTrans.encode('hex'), "02", phase)
+                        arrayProposal = ikeneg.ikeProposal(bytesTrans.hex(), "02", phase)
                         bytesProposal = ikeneg.packPacket(arrayProposal)
                         #SA Payload
-                        arraySA = ikeneg.ikeSA(bytesProposal.encode('hex'))
+                        arraySA = ikeneg.ikeSA(bytesProposal.hex())
                         bytesSA = ikeneg.packPacket(arraySA)
 
                         #arraySA_i = arraySA[4:]
-                        #SA_i = self.packPacket(arraySA_i).encode('hex')
+                        #SA_i = self.packPacket(arraySA_i).hex()
 
                         #SA_i = arraySA[2:]
-                        SA_i = bytesSA.encode('hex')[8:]
+                        SA_i = bytesSA.hex()[8:]
                         bytesSA_i = SA_i.decode('hex')
 
                         arrayNonce,nonce = ikeneg.ikeNonce("0d")
@@ -3349,7 +3349,7 @@ if __name__ == '__main__':
 
                         ###***TRY ADDING XAUTH PAYLAOD HERE FOR AUTH BYPASS FAILURE FIX
                         #ID payload
-                        arrayID,ID_i = ikeneg.ikeID(mcfgIP.encode('hex'),"01","0000","00","05")#next payload = ID (5), 0000 = port
+                        arrayID,ID_i = ikeneg.ikeID(mcfgIP.hex(),"01","0000","00","05")#next payload = ID (5), 0000 = port
                         bytesID = ikeneg.packPacket(arrayID)
 
                         #***NOTE - LOOK AT PADDING PRIOR TO ADDING HASH PAYLOAD AND AFTER
@@ -3377,22 +3377,22 @@ if __name__ == '__main__':
                         curIV = ikeCrypto.calcIV(p2IV.decode('hex'), msgID.decode('hex'), IVlen, hashType)
                         plainPayload = ikeCrypto.calcPadding(encType,bytesHash+bytesqmData)
                         if debug > 0:
-                                print("Plain-text Payload: %s"%plainPayload.encode('hex'))
+                                print("Plain-text Payload: %s"%plainPayload.hex())
                         #Encryption/decryption uses last block from previous encrypted payload (CBC) except when a new message ID is created
                         cipher = ikeCrypto.ikeCipher(encKey, curIV, encType)
                         encPayload = cipher.encrypt(plainPayload)
 
                         if debug > 0:
-                                print("Encrypted Payload: %s"%encPayload.encode('hex'))
+                                print("Encrypted Payload: %s"%encPayload.hex())
 
                         payloads = arrayencPayload = array.array('B', encPayload)
                         payloads = ikeneg.packPacket(arrayencPayload)
-                        arrayIKE = ikeneg.ikeHeader("08",iCookie,rCookie,version,flags,xType,msgID,payloads.encode('hex'))
+                        arrayIKE = ikeneg.ikeHeader("08",iCookie,rCookie,version,flags,xType,msgID,payloads.hex())
                         bytesIKE = ikeneg.packPacket(arrayIKE)
 
                         #Send QM packet 1
                         ikeneg.sendPacket(bytesIKE,targetIP,sport,port)
-                        dicCrypto["lastBlock"] = bytesIKE.encode('hex')[-IVlen:]
+                        dicCrypto["lastBlock"] = bytesIKE.hex()[-IVlen:]
                         count = 0
                         status = "p2_qm1"
                         while len(packets) < 5:
@@ -3469,23 +3469,23 @@ if __name__ == '__main__':
                         curIV = dicCrypto["lastBlock"].decode('hex')
                         plainPayload = ikeCrypto.calcPadding(encType,bytesHash)
                         if debug > 0:
-                                print("Plain-text Payload: %s"%plainPayload.encode('hex'))
+                                print("Plain-text Payload: %s"%plainPayload.hex())
                         #Encryption/decryption uses last block from previous encrypted payload (CBC) except whne msgID has changed
                         cipher = ikeCrypto.ikeCipher(encKey, curIV, encType)
                         encPayload = cipher.encrypt(plainPayload)
 
                         if debug > 0:
-                                print("Encrypted Payload: %s"%encPayload.encode('hex'))
+                                print("Encrypted Payload: %s"%encPayload.hex())
 
                         arrayencPayload = array.array('B', encPayload)
                         bytesencPayload = ikeneg.packPacket(arrayencPayload)
 
-                        arrayIKE = ikeneg.ikeHeader("08",iCookie,rCookie,version,flags,xType,msgID,bytesencPayload.encode('hex'))#next payload 0 = none
+                        arrayIKE = ikeneg.ikeHeader("08",iCookie,rCookie,version,flags,xType,msgID,bytesencPayload.hex())#next payload 0 = none
                         bytesIKE = ikeneg.packPacket(arrayIKE)
 
                         #Send QM packet 3
                         ikeneg.sendPacket(bytesIKE,targetIP,sport,port)
-                        dicCrypto["lastBlock"] = bytesIKE.encode('hex')[-IVlen:]
+                        dicCrypto["lastBlock"] = bytesIKE.hex()[-IVlen:]
                         prot = "03"
                         print("Phase 2 Complete!")
                         p2spi = dicCrypto["p2spi"]
@@ -3499,7 +3499,7 @@ if __name__ == '__main__':
 
                         p2key = ikeCrypto.calcKEYMAT(hashType, keyLen, skeyid_d, prot.decode('hex'), p2spi.decode('hex'), nonce.decode('hex'), nonce_r.decode('hex'))
 
-                        print("|Encryption Key: %s|"%p2key.encode('hex'))
+                        print("|Encryption Key: %s|"%p2key.hex())
                         print("|Initial IV: %s                                    |\n=================================================================="%dicCrypto["p2IV"])
 
 
@@ -3568,18 +3568,18 @@ if __name__ == '__main__':
                                         curIV = dicCrypto["lastBlock"].decode('hex')
                                         plainPayload = ikeCrypto.calcPadding(encType,bytesHash+bytesDPD)
                                         if debug > 0:
-                                                print("Plain-text Payload: %s"%plainPayload.encode('hex'))
+                                                print("Plain-text Payload: %s"%plainPayload.hex())
                                         #Encryption/decryption uses last block from previous encrypted payloa$
                                         cipher = ikeCrypto.ikeCipher(encKey, curIV, encType)
                                         encPayload = cipher.encrypt(plainPayload)
 
                                         if debug > 0:
-                                                print("Encrypted Payload: %s"%encPayload.encode('hex'))
+                                                print("Encrypted Payload: %s"%encPayload.hex())
 
                                         arrayencPayload = array.array('B', encPayload)
                                         bytesencPayload = ikeneg.packPacket(arrayencPayload)
 
-                                        arrayIKE = ikeneg.ikeHeader("0b",iCookie,rCookie,version,flags,xType,msgID,bytesencPayload.encode('hex'))
+                                        arrayIKE = ikeneg.ikeHeader("0b",iCookie,rCookie,version,flags,xType,msgID,bytesencPayload.hex())
                                         bytesIKE = ikeneg.packPacket(arrayIKE)
 
                                         #Send DPD packet

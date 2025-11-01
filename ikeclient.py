@@ -8,6 +8,7 @@
 import socket
 import OpenSSL
 import sys
+import os
 import struct
 
 # The old `udp` package (pyip) is deprecated in this project. We no longer
@@ -222,7 +223,7 @@ class IKEv1Client(object):
     }
     dicCertType = {
         "0": "NONE",
-        "1": "PKCS7 wrapped X.509 certificate",
+        "1": "PKCS7 wrapped X.509 c/ertificate",
         "2": "PGP Certificate",
         "3": "DNS Signed Key",
         "4": "X.509 Certificate - Signature",
@@ -237,10 +238,10 @@ class IKEv1Client(object):
     def __init__(self, debug):
         self.debug = debug
 
-    def secRandom(self, bytes):
+    def secRandom(self, n):
         # Creates selected number of random bytes
         # Provide the number of bytes required as input, method will return raw bytes
-        randomBytes = OpenSSL.rand.bytes(bytes)
+        randomBytes = os.urandom(n)
         return randomBytes
 
     def payBuild(self, strPayload, lenLen, *arg):
@@ -363,7 +364,7 @@ class IKEv1Client(object):
             protID = "03"
             spiSize = "04"
             propTrans = "01"
-            spi = self.secRandom(4).encode("hex")
+            spi = self.secRandom(4).hex()
 
         try:
             strPayload = (
@@ -520,7 +521,7 @@ class IKEv1Client(object):
             payNext = "05"
         padding = "00"  # reserved space
         ###***probably need to increase the nonce size in the below line with alternative algorithms?
-        nonce = self.secRandom(20).encode("hex")
+        nonce = self.secRandom(20).hex()
         strPayload = payNext + padding + nonce
         arrayPacket = self.payBuild(strPayload, 2)
 
@@ -539,7 +540,7 @@ class IKEv1Client(object):
         # Provide string ID, ID type, port, protocol ID and next payload as arguments. Returns array of the whole payload and the ID for crypto usage
         padding = "00"  # padding (reserved space)
         if idType == "03" or idType == "02":
-            idData = idData.encode("hex")
+            idData = idData.hex()
         else:
             pass
 
@@ -697,13 +698,13 @@ class IKEv1Client(object):
                 payloadXAUTH = (
                     hex(attXAUTH)[2:].zfill(4)
                     + hex(6)[2:].zfill(4)
-                    + attXAUTHValue.encode("hex")
+                    + attXAUTHValue.hex()
                 )
             else:
                 payloadXAUTH = (
                     hex(attXAUTH)[2:].zfill(4)
                     + hex(attLen)[2:].zfill(4)
-                    + attXAUTHValue.encode("hex")
+                    + attXAUTHValue.hex()
                 )
 
             if args and args[0] == "cisco":
@@ -820,7 +821,7 @@ class IKEv1Client(object):
                 print("Sending: %s" % bytes.hex())
             except Exception:
                 try:
-                    print("Sending: %s" % bytes.encode("hex"))
+                    print("Sending: %s" % bytes.hex())
                 except Exception:
                     print("Sending: <binary data>")
 
@@ -872,18 +873,18 @@ class IKEv1Client(object):
         bytesTrans = ikeneg.packPacket(arrayTrans)
 
         # Proposal
-        arrayProposal = ikeneg.ikeProposal(bytesTrans.encode("hex"), "00", phase)
+        arrayProposal = ikeneg.ikeProposal(bytesTrans.hex(), "00", phase)
         bytesProposal = ikeneg.packPacket(arrayProposal)
 
         # SA
         arraySA = ikeneg.ikeSA(
-            bytesProposal.encode("hex")
-        )  # +bytesTrans.encode('hex'))
+            bytesProposal.hex()
+        )  # +bytesTrans.hex())
         bytesSA = ikeneg.packPacket(arraySA)
 
         # Pull out the part included in crypto operations
         arraySA_i = arraySA[4:]
-        SA_i = ikeneg.packPacket(arraySA_i).encode("hex")
+        SA_i = ikeneg.packPacket(arraySA_i).hex()
 
         # Key Exchange
         ikeDH = dh.DiffieHellman(DHGroup)
@@ -932,7 +933,7 @@ class IKEv1Client(object):
             flags,
             "04",
             "00000000",
-            payloads.encode("hex"),
+            payloads.hex(),
         )
         bytesIKE = ikeneg.packPacket(arrayIKE)
 
